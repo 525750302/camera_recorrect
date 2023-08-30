@@ -20,6 +20,7 @@ class yolo():
     def get_one_picture(self):
         # Read a frame from the video
         success, frame = self.cap.read()
+        cv2.imwrite("C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/frame.png", frame)
         print(success)
         (max_img_size_y,max_img_size_x,img_c) = frame.shape
         if success:

@@ -20,11 +20,11 @@ class mediapipe_model():
         #（2）处理每一帧图像
         self.lmlist = [] # 存放人体关键点信息
         self.picture_PATH = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/gape_picture_1.png"
- 
+        self.txt_PATH = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/data.txt"
     def check_feacture(self):    
         # 接收图片是否导入成功、帧图像
         img = cv2.imread(self.picture_PATH)
-
+        txt_file = open(self.txt_PATH,'a')
         # 将导入的BGR格式图像转为RGB格式
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -41,6 +41,7 @@ class mediapipe_model():
             self.mpDraw.draw_landmarks(img, results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
 
             # 获取32个人体关键点坐标, index记录是第几个关键点
+            txt_file.truncate(0)
             for index, lm in enumerate(results.pose_landmarks.landmark):
 
                 # 保存每帧图像的宽、高、通道数
@@ -51,14 +52,17 @@ class mediapipe_model():
                 cx, cy = int(lm.x * w), int(lm.y * h)
 
                 # 打印坐标信息
-                print(index, cx, cy)
-
+                if index == 0 or index == 2 or index == 5 or index == 8 or index == 7 or index == 9 or index == 10:
+                    txt_file.write(str(cx))
+                    txt_file.write('\r')
+                    txt_file.write(str(cy))
+                    txt_file.write('\r')
                 # 保存坐标信息
                 self.lmlist.append((cx, cy))
 
                 # 在关键点上画圆圈，img画板，以(cx,cy)为圆心，半径5，颜色绿色，填充圆圈
                 cv2.circle(img, (cx,cy), 3, (0,255,0), cv2.FILLED)
-    
+        txt_file.close()
         # 查看FPS
         cTime = time.time() #处理完一帧图像的时间
         fps = 1/(cTime-self.pTime)
