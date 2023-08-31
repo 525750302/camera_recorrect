@@ -49,7 +49,7 @@ class yolo():
         for box, track_id in zip(boxes, track_ids):
             #检测是否是人类
             # If you want to get screenshots of other objects from the image you can add judgment conditions here
-            # the classifation no of dog is 16 ; the classifation no of dog is 0
+            # the classifation no of dog is 16 ; the classifation no of human is 0
             if class_name[no] == 0:
                 pictureName = self.gape_picture_PATH + "gape_picture_" + str(track_id) + ".png"
                 print(pictureName)
