@@ -32,6 +32,7 @@ class yolo():
             # Get the boxes and track IDs
             boxes = results[0].boxes.xywh.cpu()
             track_ids = results[0].boxes.id.int().cpu().tolist()
+            class_name = results[0].boxes.cls.int().cpu().tolist()
 
         # 查看FPS
         cTime = time.time() #处理完一帧图像的时间
@@ -43,16 +44,25 @@ class yolo():
         # 显示图像，输入窗口名及图像数据
         cv2.imshow('image_YOLO', annotated_frame)    
         cv2.waitKey(10)
+        no = 0
+        person_ids = []
         for box, track_id in zip(boxes, track_ids):
-            pictureName = self.gape_picture_PATH + "gape_picture_" + str(track_id) + ".png"
-            print(pictureName)
-            x, y, w, h = box
-            x = int(x.item())
-            y = int(y.item())
-            w = int(w.item())
-            h = int(h.item())
-            #print (max(int(y - h/2), 0),min(int(y + h/2), max_img_size_y),max(int(x - w/2), 0), min(int(x + w/2), max_img_size_x))
-            #cropped = annotated_frame[0:int(max_img_size_x/2), 0:int(max_img_size_y/2)]
-            cropped = annotated_frame[max(int(y - h/2), 0):min(int(y + h/2), max_img_size_y),max(int(x - w/2), 0):min(int(x + w/2), max_img_size_x)]
-            cv2.imwrite(pictureName, cropped)
-            
+            #检测是否是人类
+            # If you want to get screenshots of other objects from the image you can add judgment conditions here
+            # the classifation no of dog is 16 ; the classifation no of dog is 0
+            if class_name[no] == 0:
+                pictureName = self.gape_picture_PATH + "gape_picture_" + str(track_id) + ".png"
+                print(pictureName)
+                x, y, w, h = box
+                x = int(x.item())
+                y = int(y.item())
+                w = int(w.item())
+                h = int(h.item())
+                #print (max(int(y - h/2), 0),min(int(y + h/2), max_img_size_y),max(int(x - w/2), 0), min(int(x + w/2), max_img_size_x))
+                #cropped = annotated_frame[0:int(max_img_size_x/2), 0:int(max_img_size_y/2)]
+                cropped = annotated_frame[max(int(y - h/2), 0):min(int(y + h/2), max_img_size_y),max(int(x - w/2), 0):min(int(x + w/2), max_img_size_x)]
+                cv2.imwrite(pictureName, cropped)
+                person_ids.append(track_ids[no])
+            no = no + 1
+              
+        return person_ids

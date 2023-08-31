@@ -19,12 +19,17 @@ class mediapipe_model():
         self.pTime = 0  # 设置第一帧开始处理的起始时间
         #（2）处理每一帧图像
         self.lmlist = [] # 存放人体关键点信息
-        self.picture_PATH = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/gape_picture_1.png"
-        self.txt_PATH = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/data.txt"
-    def check_feacture(self):    
+        self.picture_PATH = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/"
+        self.txt_PATH = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/"
+        
+    def check_feacture(self, id):    
+        #根据收到的ID来决定输入的数据
+        print("id:", id)
+        picture_path = self.picture_PATH + "gape_picture_" + str(id) +".png"
         # 接收图片是否导入成功、帧图像
-        img = cv2.imread(self.picture_PATH)
-        txt_file = open(self.txt_PATH,'a')
+        img = cv2.imread(picture_path)
+        txt_path = self.txt_PATH + "data_" + str(id) + ".txt"
+        txt_file = open(txt_path,'a')
         # 将导入的BGR格式图像转为RGB格式
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -33,6 +38,8 @@ class mediapipe_model():
 
         # 查看体态关键点坐标，返回x,y,z,visibility
         # print(results.pose_landmarks)
+
+        # 记录是否检测到人脸
 
         # 如果检测到体态就执行下面内容，没检测到就不执行
         if results.pose_landmarks:
@@ -62,15 +69,20 @@ class mediapipe_model():
 
                 # 在关键点上画圆圈，img画板，以(cx,cy)为圆心，半径5，颜色绿色，填充圆圈
                 cv2.circle(img, (cx,cy), 3, (0,255,0), cv2.FILLED)
-        txt_file.close()
+            txt_file.close()
+            
+            #如果成功检测返回true
+            return True
         # 查看FPS
-        cTime = time.time() #处理完一帧图像的时间
-        fps = 1/(cTime-self.pTime)
-        self.pTime = cTime  #重置起始时间
+        #cTime = time.time() #处理完一帧图像的时间
+        #fps = 1/(cTime-self.pTime)
+        #self.pTime = cTime  #重置起始时间
 
         # 在视频上显示fps信息，先转换成整数再变成字符串形式，文本显示坐标，文本字体，文本大小
-        cv2.putText(img, str(int(fps)), (70,50), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 3)  
+        #cv2.putText(img, str(int(fps)), (70,50), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 3)  
 
         # 显示图像，输入窗口名及图像数据
-        cv2.imshow('image', img)
-        cv2.waitKey(10)    
+        #cv2.imshow('image', img)
+        #cv2.waitKey(10)    
+        txt_file.close()
+        return False
