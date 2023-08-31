@@ -90,15 +90,16 @@ class Thread_Mediapipe (threading.Thread):
             lockMedia.acquire()
             global resource_controler
             resource_num = resource_controler.get_len_ids()
-            for i in range(resource_num):
-                id = resource_controler.return_id(i)
-                resource_controler.Change_Mediapipe_id(id)
-                flag_checked = self.model.check_feacture(id)
-                # 检查是否检测到特征点并且进行管理
-                if flag_checked == True:
-                    resource_controler.add_successful_checked_ids(id)
-                elif flag_checked == False:
-                    resource_controler.remove_successful_checked_ids(id)
+            if resource_num > 0:
+                for i in range(resource_num):
+                    id = resource_controler.return_id(i)
+                    resource_controler.Change_Mediapipe_id(id)
+                    flag_checked = self.model.check_feacture(id)
+                    # 检查是否检测到特征点并且进行管理
+                    if flag_checked == True:
+                        resource_controler.add_successful_checked_ids(id)
+                    elif flag_checked == False:
+                        resource_controler.remove_successful_checked_ids(id)
             # 释放锁
             lockcut.release()
             print_time(self.name, self.counter)
@@ -119,12 +120,13 @@ class Thread_cut_face (threading.Thread):
             lockcut.acquire()
             global resource_controler
             resource_num = resource_controler.get_len_ids()
-            for i in range(resource_num):
-                id = resource_controler.return_id(i)
-                if resource_controler.check_successful_checked_ids(id) == False:
-                    continue
-                resource_controler.Change_cut_picture_id(id)
-                self.model.cut_picture(id)
+            if resource_num>0:
+                for i in range(resource_num):
+                    id = resource_controler.return_id(i)
+                    if resource_controler.check_successful_checked_ids(id) == False:
+                        continue
+                    resource_controler.Change_cut_picture_id(id)
+                    self.model.cut_picture(id)
             # 释放锁
             lockYOLO.release()
             print_time(self.name, self.counter)

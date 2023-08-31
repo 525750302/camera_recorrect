@@ -23,16 +23,17 @@ class yolo():
         cv2.imwrite("C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/frame.png", frame)
         print(success)
         (max_img_size_y,max_img_size_x,img_c) = frame.shape
+        track_ids = []
         if success:
             # Run YOLOv8 tracking on the frame, persisting tracks between frames
             results = self.model.track(frame, persist=True)
-
             # Visualize the results on the frame
             annotated_frame = results[0].plot()
             # Get the boxes and track IDs
             boxes = results[0].boxes.xywh.cpu()
-            track_ids = results[0].boxes.id.int().cpu().tolist()
-            class_name = results[0].boxes.cls.int().cpu().tolist()
+            if results[0].boxes.id != None:
+                track_ids = results[0].boxes.id.int().cpu().tolist()
+                class_name = results[0].boxes.cls.int().cpu().tolist()
 
         # 查看FPS
         cTime = time.time() #处理完一帧图像的时间
@@ -46,6 +47,8 @@ class yolo():
         cv2.waitKey(10)
         no = 0
         person_ids = []
+        if len(track_ids) == 0:
+            return person_ids
         for box, track_id in zip(boxes, track_ids):
             #检测是否是人类
             # If you want to get screenshots of other objects from the image you can add judgment conditions here
