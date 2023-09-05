@@ -1,8 +1,8 @@
 task: detect
 mode: train
 model: C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/yolov8n.pt
-data: coco128.yaml
-epochs: 3
+data: VisDrone.yaml
+epochs: 20
 patience: 50
 batch: 16
 imgsz: 640

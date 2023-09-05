@@ -10,7 +10,7 @@ class yolo():
     def __init__(self, cap):
         os.environ['KMP_DUPLICATE_LIB_OK']='True'
         # Load the YOLOv8 model
-        self.model = YOLO('C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/yolov8n.pt')
+        self.model = YOLO('C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/runs/detect/train/weights/best.pt')
         # Open the video file
         self.cap = cap
 
@@ -20,17 +20,20 @@ class yolo():
     def get_one_picture(self):
         # Read a frame from the video
         success, frame = self.cap.read()
+        #success = True
+        #frame = cv2.imread(self.cap)
         cv2.imwrite("C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/frame.png", frame)
         print(success)
         (max_img_size_y,max_img_size_x,img_c) = frame.shape
         track_ids = []
         if success:
             # Run YOLOv8 tracking on the frame, persisting tracks between frames
-            results = self.model.track(frame, persist=True)
+            results = self.model.track(frame, persist=True, conf=0.3, iou=0.5)
             # Visualize the results on the frame
             annotated_frame = results[0].plot()
             # Get the boxes and track IDs
             boxes = results[0].boxes.xywh.cpu()
+            print("id:",results[0].boxes.id)
             if results[0].boxes.id != None:
                 track_ids = results[0].boxes.id.int().cpu().tolist()
                 class_name = results[0].boxes.cls.int().cpu().tolist()

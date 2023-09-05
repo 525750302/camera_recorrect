@@ -144,7 +144,8 @@ lockMedia.acquire()
 lockcut.acquire()
 threads = []
 
-cap = cv2.VideoCapture(0)
+cap_path = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/camera_picture/anime2.mp4"
+cap = cv2.VideoCapture(cap_path)
 # 创建新线程
 thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)
 thread2 = Thread_Mediapipe(2, "Thread-mediapipe", 0.01)
