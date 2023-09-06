@@ -70,7 +70,9 @@ class mediapipe_model():
                 # 在关键点上画圆圈，img画板，以(cx,cy)为圆心，半径5，颜色绿色，填充圆圈
                 cv2.circle(img, (cx,cy), 3, (0,255,0), cv2.FILLED)
             txt_file.close()
-            
+            PATH = self.picture_PATH + "recognize_result.png"
+            cv2.imwrite(PATH, img)
+    
             #如果成功检测返回true
             return True
         # 查看FPS
