@@ -11,8 +11,8 @@ class yolo():
     def __init__(self, cap):
         os.environ['KMP_DUPLICATE_LIB_OK']='True'
         # Load the YOLOv8 model
-        self.model_origin = YOLO('C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/yolov8n.pt')
-        self.model_rotated = YOLO('C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/yolov8n.pt')
+        self.model_origin = YOLO('C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/yolov8s.pt')
+        self.model_rotated = YOLO('C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/yolov8s.pt')
         # Open the video file
         self.cap = cap
         # self.cut_function = cut_picture_from_top.cut_picture_from_top_function()
@@ -25,6 +25,9 @@ class yolo():
         #origin_frame = cv2.imread(self.cap)
         PATH = self.gape_picture_PATH + "origin_frame.png"
         cv2.imwrite(PATH, origin_frame)
+        #test
+        origin_frame = cv2.imread(PATH)
+        
         # origin_frame = self.cut_function.change_from_top(origin_frame)
         print(success)
         
