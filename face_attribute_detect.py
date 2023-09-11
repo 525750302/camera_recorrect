@@ -3,7 +3,7 @@ from deepface.extendedmodels import Age, Gender, Race, Emotion
 from deepface.commons import functions, realtime, distance as dst
 import numpy as np
 
-img_path = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/face_0.png"
+img_path = "C:/Users/XIR1SBY/Desktop/camera/yolo/face_0.png"
 
 models = {}
 models["age"] = DeepFace.build_model("Age")

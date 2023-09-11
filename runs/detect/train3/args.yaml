@@ -1,6 +1,6 @@
 task: detect
 mode: train
-model: C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/yolov8n.pt
+model: C:/Users/XIR1SBY/Desktop/camera/yolo/yolov8n.pt
 data: VisDrone.yaml
 epochs: 20
 patience: 50

@@ -1,5 +1,5 @@
 import sys
-sys.path.append(r'C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo')
+sys.path.append(r'C:/Users/XIR1SBY/Desktop/camera/yolo')
 import yolo.yolo_main
 import Mediapipe_recognize
 import cut_face_from_picture
@@ -144,7 +144,7 @@ lockMedia.acquire()
 lockcut.acquire()
 threads = []
 
-cap_path = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/camera_picture/anime2.mp4"
+cap_path = "C:/Users/XIR1SBY/Desktop/camera/camera_picture/anime2.mp4"
 cap = cv2.VideoCapture(cap_path)
 # 创建新线程
 thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)

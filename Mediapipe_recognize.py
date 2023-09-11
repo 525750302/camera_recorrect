@@ -19,8 +19,8 @@ class mediapipe_model():
         self.pTime = 0  # 设置第一帧开始处理的起始时间
         #（2）处理每一帧图像
         self.lmlist = [] # 存放人体关键点信息
-        self.picture_PATH = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/"
-        self.txt_PATH = "C:/Users/XIR1SBY/Desktop/bosch_avp_camera_recorrect/yolo/"
+        self.picture_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/"
+        self.txt_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/"
         
     def check_feacture(self, id):    
         #根据收到的ID来决定输入的数据
