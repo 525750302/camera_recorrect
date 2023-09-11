@@ -21,17 +21,30 @@ class cut_face_from_picture():
             y = int(self.txt_file.readline())
             point_location.append([x,y])
         #w为横向的宽 h 为纵向的长
-        right_w = abs(point_location[0][0] - point_location[3][0]) + max(abs(point_location[0][0] - point_location[4][0])/2 , abs(point_location[0][0] - point_location[6][0])/2)
-        left_w = abs(point_location[0][0] - point_location[4][0]) + max(abs(point_location[0][0] - point_location[3][0])/2 , abs(point_location[0][0] - point_location[5][0])/2)
-        if (point_location[1][1] + point_location[2][1]) / 2 < point_location[0][1]:
-            up_h = abs(point_location[0][1] - (point_location[1][1] + point_location[2][1]) / 2)*6 
-        else:
-            up_h = abs(point_location[0][1] - (point_location[5][1] + point_location[6][1]) / 2)*3 
+        #right_w = abs(point_location[0][0] - point_location[3][0]) + max(abs(point_location[0][0] - point_location[4][0])/2 , abs(point_location[0][0] - point_location[6][0])/2)
+        #left_w = abs(point_location[0][0] - point_location[4][0]) + max(abs(point_location[0][0] - point_location[3][0])/2 , abs(point_location[0][0] - point_location[5][0])/2)
+        #if (point_location[1][1] + point_location[2][1]) / 2 < point_location[0][1]:
+        #    up_h = abs(point_location[0][1] - (point_location[1][1] + point_location[2][1]) / 2)*6 
+        #else:
+        #    up_h = abs(point_location[0][1] - (point_location[5][1] + point_location[6][1]) / 2)*3 
+        #
+        #if point_location[0][1] < (point_location[5][1] + point_location[6][1]) / 2:
+        #    down_h = abs(point_location[0][1] - (point_location[5][1] + point_location[6][1]) / 2)*3
+        #else:
+        #    down_h = abs(point_location[0][1] - (point_location[1][1] + point_location[2][1]) / 2)*6
         
-        if point_location[0][1] < (point_location[5][1] + point_location[6][1]) / 2:
-            down_h = abs(point_location[0][1] - (point_location[5][1] + point_location[6][1]) / 2)*3
-        else:
-            down_h = abs(point_location[0][1] - (point_location[1][1] + point_location[2][1]) / 2)*6
+        distance_x =[]
+        distance_y =[]
+        for i in range(point_index):
+            if i == 0:
+                continue
+            distance_x.append(point_location[i][0] - point_location[0][0])
+            distance_y.append(point_location[i][1] - point_location[0][1])
+        
+        up_h =abs(min(distance_y))*3
+        down_h = max(distance_y)*3
+        right_w = max(distance_x)*2
+        left_w = abs(min(distance_x))*2
         center_point_x =  point_location[0][0]
         center_point_y =  point_location[0][1]
 
