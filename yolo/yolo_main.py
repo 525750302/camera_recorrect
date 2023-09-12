@@ -75,13 +75,14 @@ class yolo():
         person_w_rotated = []
         person_h_rotated = []
         
+        count = 0
         if len(track_ids_origin) > 0:
             for boxes_origin, track_id in zip(boxes_origin, track_ids_origin):
                 #检测是否是人类
                 # If you want to get screenshots of other objects from the image you can add judgment conditions here
                 # the classifation no of dog is 16 ; the classifation no of human is 0
-                if class_name_origin[no_origin] == 0:
-                    person_ids_origin.append(track_ids_origin[no_origin])
+                if class_name_origin[count] == 0:
+                    person_ids_origin.append(track_ids_origin[count])
                     x, y, w, h = boxes_origin
                     x = int(x.item())
                     y = int(y.item())
@@ -92,12 +93,14 @@ class yolo():
                     person_w_origin.append(w)
                     person_h_origin.append(h)
                     no_origin = no_origin + 1
+                count = count + 1
         
         no_rotated = 0
+        count = 0
         if len(track_ids_rotated) > 0:
             for boxes_rotated, track_id in zip(boxes_rotated, track_ids_rotated):
-                if class_name_rotated[no_rotated] == 0:
-                    person_ids_rotated.append(track_ids_rotated[no_rotated])
+                if class_name_rotated[count] == 0:
+                    person_ids_rotated.append(track_ids_rotated[count])
                     x, y, w, h = boxes_rotated
                     x = int(x.item())
                     y = int(y.item())
@@ -108,17 +111,19 @@ class yolo():
                     person_w_rotated.append(w)
                     person_h_rotated.append(h)
                     no_rotated = no_rotated + 1
+                count = count + 1
         
         person_ids = []
         person_no = 0
         #如果原图像有人的识别，那么以原图像的数据为基础
+        #重新附加编号
         if no_origin > 0:
             for track_id in range(no_origin):
-                print(track_id)
                 self.save_person_inf(annotated_origin_frame, person_no, person_x_origin[track_id], person_y_origin[track_id], person_w_origin[track_id], person_h_origin[track_id],1)
                 person_ids.append(person_no)
                 person_no = person_no + 1
         #如果原图像没有人的识别，那么以旋转图像的数据为基础， 并且记得替换xywh
+        #重新在这里附加编号
         elif no_rotated > 0:
             for track_id in range(no_rotated):
                 self.save_person_inf(annotated_rotated_frame, person_no, person_x_rotated[track_id], person_y_rotated[track_id], person_w_rotated[track_id], person_h_rotated[track_id],0)
