@@ -47,7 +47,7 @@ class mediapipe_model():
             # 绘制姿态坐标点，img为画板，传入姿态点坐标，坐标连线
             self.mpDraw.draw_landmarks(img, results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
 
-            # 获取32个人体关键点坐标, index记录是第几个关键点
+            # 获取32个人体关键点坐标, index记录是第几个关键点 事先清除文本的内容
             txt_file.truncate(0)
             for index, lm in enumerate(results.pose_landmarks.landmark):
 

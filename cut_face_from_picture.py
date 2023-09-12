@@ -12,6 +12,9 @@ class cut_face_from_picture():
         location_data_PATH = self.location_data_PATH + str(id) + ".txt"
         self.txt_file = open(location_data_PATH,'r')
         result_PATH = self.result_PATH + str(id) + ".png"
+        
+        #https://developers.google.com/mediapipe/solutions/vision/pose_landmarker
+        #特征点的编号
         point_index = [0,2,5,7,8,9, 10]
         point_location = []
         self.txt_file.seek(0, 0)
@@ -33,6 +36,7 @@ class cut_face_from_picture():
         #else:
         #    down_h = abs(point_location[0][1] - (point_location[1][1] + point_location[2][1]) / 2)*6
         
+        #以鼻子为中心点计算其他特征点的距离
         distance_x =[]
         distance_y =[]
         for i in range(len(point_index)):
@@ -41,14 +45,21 @@ class cut_face_from_picture():
             distance_x.append(point_location[i][0] - point_location[0][0])
             distance_y.append(point_location[i][1] - point_location[0][1])
         
+        #从各个特侦点计算脸部的大致位置
         up_h =abs(min(distance_y))*3
         down_h = max(distance_y)*3
         right_w = max(distance_x)*2
         left_w = abs(min(distance_x))*2
         center_point_x =  point_location[0][0]
         center_point_y =  point_location[0][1]
-
+        #从图片中切出脸的大致位置
         img = cv2.imread(raw_pictiure_path)
         cut_face_image = img[max(0,int(center_point_y - up_h)):int(center_point_y + down_h),int(center_point_x - left_w):int(center_point_x + right_w)]
+        
+        #如果检测到脸的方向倒置则进行180度旋转保证脸方向朝上
+        if (point_location[1][1] + point_location[2][1]) / 2 > center_point_y:
+            cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_180)
+        
         cv2.imwrite(result_PATH, cut_face_image)
+        self.txt_file.close()
         print("finish")

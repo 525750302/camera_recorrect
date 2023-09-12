@@ -11,22 +11,21 @@ class yolo():
     def __init__(self, cap):
         os.environ['KMP_DUPLICATE_LIB_OK']='True'
         # Load the YOLOv8 model
+        # Download address https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s.pt
         self.model_origin = YOLO('C:/Users/XIR1SBY/Desktop/camera/yolo/yolov8s.pt')
         self.model_rotated = YOLO('C:/Users/XIR1SBY/Desktop/camera/yolo/yolov8s.pt')
         # Open the video file
         self.cap = cap
         # self.cut_function = cut_picture_from_top.cut_picture_from_top_function()
         self.gape_picture_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/"
+        self.box_data_txt_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/box_data_"
         self.pTime = 0  # 设置第一帧开始处理的起始时间
     def get_one_picture(self):
         # Read a frame from the video
         success, origin_frame = self.cap.read()
         #success = True
         #origin_frame = cv2.imread(self.cap)
-        PATH = self.gape_picture_PATH + "origin_frame.png"
-        cv2.imwrite(PATH, origin_frame)
         #test
-        origin_frame = cv2.imread(PATH)
         
         # origin_frame = self.cut_function.change_from_top(origin_frame)
         print(success)
@@ -34,8 +33,6 @@ class yolo():
         #--------------------------------------
         rotated_frame = cv2.flip(origin_frame, 1)
         rotated_frame = cv2.rotate(rotated_frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        PATH = self.gape_picture_PATH + "origin_frame_rotate.png"
-        cv2.imwrite(PATH, rotated_frame)
         track_ids_origin = []
         track_ids_rotated = []
         if success:
@@ -60,20 +57,10 @@ class yolo():
             if results_rotated[0].boxes.id != None:
                 track_ids_rotated = results_rotated[0].boxes.id.int().cpu().tolist()
                 class_name_rotated = results_rotated[0].boxes.cls.int().cpu().tolist()
-            
-
-        # 查看FPS
-        cTime = time.time() #处理完一帧图像的时间
-        fps = 1/(cTime-self.pTime)
-        self.pTime = cTime  #重置起始时间
-
-        # 在视频上显示fps信息，先转换成整数再变成字符串形式，文本显示坐标，文本字体，文本大小
-        cv2.putText(annotated_origin_frame, str(int(fps)), (70,50), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 3)  
-        cv2.putText(annotated_rotated_frame, str(int(fps)), (70,50), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 3)  
-        # 显示图像，输入窗口名及图像数据
-        cv2.imshow('image_YOLO_origin', annotated_origin_frame)   
-        cv2.imshow('image_YOLO_rotated', annotated_rotated_frame)   
-        cv2.waitKey(10)
+            PATH = self.gape_picture_PATH + "origin_frame.png"
+            cv2.imwrite(PATH, annotated_origin_frame)
+            PATH = self.gape_picture_PATH + "origin_frame_rotate.png"
+            cv2.imwrite(PATH, annotated_rotated_frame)
         
         #-----------------------------
         no_origin = 0
@@ -94,7 +81,7 @@ class yolo():
                 # If you want to get screenshots of other objects from the image you can add judgment conditions here
                 # the classifation no of dog is 16 ; the classifation no of human is 0
                 if class_name_origin[no_origin] == 0:
-                    person_ids_origin = person_ids_origin.append(track_ids_origin[no_origin])
+                    person_ids_origin.append(track_ids_origin[no_origin])
                     x, y, w, h = boxes_origin
                     x = int(x.item())
                     y = int(y.item())
@@ -110,7 +97,7 @@ class yolo():
         if len(track_ids_rotated) > 0:
             for boxes_rotated, track_id in zip(boxes_rotated, track_ids_rotated):
                 if class_name_rotated[no_rotated] == 0:
-                    person_ids_rotated = person_ids_rotated.append(track_ids_rotated[no_rotated])
+                    person_ids_rotated.append(track_ids_rotated[no_rotated])
                     x, y, w, h = boxes_rotated
                     x = int(x.item())
                     y = int(y.item())
@@ -128,13 +115,13 @@ class yolo():
         if no_origin > 0:
             for track_id in range(no_origin):
                 print(track_id)
-                self.save_person_inf(annotated_origin_frame, person_no, person_x_origin[track_id], person_y_origin[track_id], person_w_origin[track_id], person_h_origin[track_id])
+                self.save_person_inf(annotated_origin_frame, person_no, person_x_origin[track_id], person_y_origin[track_id], person_w_origin[track_id], person_h_origin[track_id],1)
                 person_ids.append(person_no)
                 person_no = person_no + 1
         #如果原图像没有人的识别，那么以旋转图像的数据为基础， 并且记得替换xywh
         elif no_rotated > 0:
             for track_id in range(no_rotated):
-                self.save_person_inf(annotated_rotated_frame, person_no, person_x_rotated[track_id], person_y_rotated[track_id], person_w_rotated[track_id], person_h_rotated[track_id])
+                self.save_person_inf(annotated_rotated_frame, person_no, person_x_rotated[track_id], person_y_rotated[track_id], person_w_rotated[track_id], person_h_rotated[track_id],0)
                 person_ids.append(person_no)
                 person_no = person_no + 1
         
@@ -150,13 +137,23 @@ class yolo():
                         break
                 #存在未识别到的图像
                 if flag == 0:
-                    self.save_person_inf(annotated_rotated_frame,person_no, person_x_rotated[i], person_y_rotated[i], person_w_rotated[i], person_h_rotated[i])
+                    self.save_person_inf(annotated_rotated_frame,person_no, person_x_rotated[i], person_y_rotated[i], person_w_rotated[i], person_h_rotated[i],1)
                     person_ids.append(person_no)
                     person_no = person_no + 1
         return person_ids
     
     #为了从图片中切出人脸，决定所有的都已竖直的正常人像为储存数据
-    def save_person_inf(self, img, id, x, y, w, h):
+    def save_person_inf(self, img, id, x, y, w, h, flag = 1):
+        box_data_txt_path = self.box_data_txt_PATH + str(id) + ".txt"
+        txt_file = open(box_data_txt_path,'a')
+        txt_file.truncate(0)
+        txt_file.write(str(flag))
+        txt_file.write('\r')
+        txt_file.write(str(x))
+        txt_file.write('\r')
+        txt_file.write(str(y))
+        txt_file.write('\r')
+        txt_file.close()
         (max_img_size_y,max_img_size_x,img_c) = img.shape
         pictureName = self.gape_picture_PATH + "gape_picture_" + str(id) + ".png"
         cropped = img[max(int(y - h/2), 0):min(int(y + h/2), max_img_size_y),max(int(x - w/2), 0):min(int(x + w/2), max_img_size_x)]
