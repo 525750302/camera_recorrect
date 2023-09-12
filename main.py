@@ -37,6 +37,10 @@ class resource_stack():
             return -1
         return self.id_stack[index]
     
+    def clear_id(self):
+        self.id_stack.clear()
+        self.successful_checked_ids.clear()
+    
     def get_len_ids(self):
         return len(self.id_stack)
     
@@ -173,6 +177,7 @@ class Thread_deep_face(threading.Thread):
             #显示结果
             print("result:",self.ages,self.genders,usable_id)
             self.model.show_result(self.ages,self.genders,usable_id)
+            resource_controler.clear_id()
             # 释放锁
             lockYOLO.release()
             print_time(self.name, self.counter)
@@ -192,7 +197,7 @@ lockcut.acquire()
 lockdeepface.acquire()
 threads = []
 
-cap_path = "C:/Users/XIR1SBY/Desktop/camera/camera_picture/anime10.mp4"
+cap_path = "C:/Users/XIR1SBY/Desktop/camera/camera_picture/anime12.mp4"
 cap = cv2.VideoCapture(cap_path)
 # 创建新线程
 thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)
