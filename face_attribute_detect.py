@@ -7,7 +7,7 @@ import time
 
 class deep_face_detect():
     def __init__(self):
-        self.img_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/face_"
+        self.img_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
         self.show_path_origin = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame.png"
         self.show_path_rotate = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame_rotate.png"
         self.pTime = 0 
@@ -15,26 +15,27 @@ class deep_face_detect():
         self.models["age"] = DeepFace.build_model("Age")
         self.models["gender"] = DeepFace.build_model("Gender")
         self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/box_data_"
+        
+        self.box_location_x = []
+        self.box_location_y = []
+        self.vote_age = []
+        self.vote_gender = []
+        self.vote_count = []
 
     def detect_age_and_gender(self, id):
         img_path = self.img_PATH + str(id) + ".png"
         #对输入的图片进行预处理，确保输入为224*224 不足的部分会进行补足
-        img_objs = functions.extract_faces(img_path, detector_backend = "skip")
-        img_content = img_objs[0][0]
-        obj = {}
-        age_predictions = self.models["age"].predict(img_content, verbose=0)[0, :]
-        apparent_age = Age.findApparentAge(age_predictions)
-        # int cast is for exception - object of type 'float32' is not JSON serializable
-        obj["age"] = int(apparent_age)
-        gender_predictions = self.models["gender"].predict(img_content, verbose=0)[0, :]
-        obj["gender"] = {}
-        for i, gender_label in enumerate(Gender.labels):
-            gender_prediction = 100 * gender_predictions[i]
-            obj["gender"][gender_label] = gender_prediction
-        obj["dominant_gender"] = Gender.labels[np.argmax(gender_predictions)]
-        return obj["age"],obj["dominant_gender"]
+        #img_objs = functions.extract_faces(img_path, detector_backend = "skip")
+        #img_content = img_objs[0][0]
+        #cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/yolo/test.png",img_content)
+        objs = DeepFace.analyze(img_path , 
+        actions = ['age', 'gender'],
+        detector_backend="mediapipe",
+        enforce_detection = False)
+        print(objs[0])
+        return objs[0]["age"],objs[0]["dominant_gender"],objs[0]["gender"]
     
-    def show_result(self, ages, genders,ids):
+    def show_result(self, ages,dominant_genders, genders,ids):
         #显示最终结果图片并且加上年龄和性别的结果 查看FPS
         cTime = time.time() #处理完一帧图像的时间
         fps = 1/(cTime-self.pTime)
@@ -59,13 +60,61 @@ class deep_face_detect():
                 center_x = center_y
                 center_y = a
             txt_file.close()
+            #投票决定真正的年龄和性别 并且实现追踪功能。
+            #预计两次识别之间的帧数的移动距离不会超过1000
+            vote_id = self.check_vote_data(center_x,center_y)
+            
+            if len(ages) > 0:    
+                self.vote_data(vote_id,ages[i],dominant_genders[i])
+                ages[i] = int(self.vote_age[vote_id])
+                dominant_genders[i] = self.num_to_gender(self.vote_gender[vote_id])
+                
             # 在视频上显示年龄和性别信息，结果的文本，文本显示坐标，文本字体，文本大小
-            result_string = str(str(int(ages[i])) +"," + str(genders[i]))
+            result_string = str(str(int(ages[i])) +"," + str(dominant_genders[i])) + "," + str(genders[i])
             print("data：",result_string)
-            cv2.putText(annotated_origin_frame, result_string, (center_x,center_y), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 3)  
+            cv2.putText(annotated_origin_frame, result_string, (center_x,center_y), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 2)  
             
         
         # 显示图像，输入窗口名及图像数据
         cv2.imshow('image_origin', annotated_origin_frame)   
         cv2.imshow('image_rotated', annotated_rotated_frame)   
         cv2.waitKey(10)
+    
+    def check_vote_data(self, center_x, center_y):
+        min_no = -1
+        distance = 1000
+        for i in range(len(self.box_location_x)):
+            target_x = self.box_location_x[i]
+            target_y = self.box_location_y[i]
+            if (center_x - target_x)^2 + (center_y - target_y)^2 < distance:
+                min_no = i 
+                distance = (center_x - target_x)^2 + (center_y - target_y)^2
+        if min_no == -1:
+            self.box_location_x.append(center_x)
+            self.box_location_y.append(center_y)
+            self.vote_age.append(0)
+            self.vote_gender.append(0)
+            self.vote_count.append(0)
+            min_no = len(self.box_location_x) - 1
+        else:
+            self.box_location_x[min_no] = center_x
+            self.box_location_y[min_no] = center_y
+        return min_no
+    
+    # 更新目标位置
+    def vote_data(self,vote_id, age,gender):
+        self.vote_age[vote_id] = (self.vote_age[vote_id] * self.vote_count[vote_id] + age) / (self.vote_count[vote_id] + 1)
+        self.vote_gender[vote_id] = (self.vote_gender[vote_id] * self.vote_count[vote_id] + self.gender_to_num(gender)) / (self.vote_count[vote_id] + 1)
+        self.vote_count[vote_id] = self.vote_count[vote_id] + 1
+    
+    def gender_to_num(self,gender):
+        if gender == "Man":
+            return 1
+        elif gender == "Woman":
+            return 0
+    
+    def num_to_gender(self,num):
+        if num > 0.5:
+            return "Man"
+        else:
+            return "Woman"

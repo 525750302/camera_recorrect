@@ -28,6 +28,7 @@ class yolo():
         #test
         
         # origin_frame = self.cut_function.change_from_top(origin_frame)
+        success = True
         print(success)
         
         #--------------------------------------

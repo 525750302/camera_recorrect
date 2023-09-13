@@ -148,6 +148,7 @@ class Thread_deep_face(threading.Thread):
         self.name = name
         self.counter = counter
         self.ages = []
+        self.dominant_genders = []
         self.genders = []
         
     def run(self):
@@ -160,6 +161,7 @@ class Thread_deep_face(threading.Thread):
             global resource_controler
             resource_num = resource_controler.get_len_ids()
             self.ages.clear()
+            self.dominant_genders.clear()
             self.genders.clear()
             usable_id = []
             if resource_num>0:
@@ -169,14 +171,15 @@ class Thread_deep_face(threading.Thread):
                         continue
                     resource_controler.Change_deep_face_id(id)
                     #获得检测得到的年龄和性别
-                    age, gender = self.model.detect_age_and_gender(id)
+                    age, dominant_gender, gender = self.model.detect_age_and_gender(id)
                     self.ages.append(age)
+                    self.dominant_genders.append(dominant_gender)
                     self.genders.append(gender)
                     usable_id.append(id)
             
             #显示结果
             print("result:",self.ages,self.genders,usable_id)
-            self.model.show_result(self.ages,self.genders,usable_id)
+            self.model.show_result(self.ages,self.dominant_genders,self.genders,usable_id)
             resource_controler.clear_id()
             # 释放锁
             lockYOLO.release()
@@ -197,13 +200,13 @@ lockcut.acquire()
 lockdeepface.acquire()
 threads = []
 
-cap_path = "C:/Users/XIR1SBY/Desktop/camera/camera_picture/anime12.mp4"
+cap_path = "C:/Users/XIR1SBY/Desktop/camera/camera_picture/crouching1.mp4"
 cap = cv2.VideoCapture(cap_path)
 # 创建新线程
 thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)
 thread2 = Thread_Mediapipe(2, "Thread-mediapipe", 0.01)
 thread3 = Thread_cut_face(3, "Thread-cut-face", 0.01)
-thread4 = Thread_deep_face(3, "Thread_deep_face", 0.01)
+thread4 = Thread_deep_face(4, "Thread_deep_face", 0.01)
 
 # 创建资源管理
 resource_controler = resource_stack()
