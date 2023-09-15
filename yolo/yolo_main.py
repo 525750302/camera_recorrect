@@ -29,7 +29,7 @@ class yolo():
         
         # origin_frame = self.cut_function.change_from_top(origin_frame)
         success = True
-        print(success)
+        #print(success)
         
         #--------------------------------------
         rotated_frame = cv2.flip(origin_frame, 1)
@@ -43,7 +43,7 @@ class yolo():
             annotated_origin_frame = results_origin[0].plot()
             # Get the boxes and track IDs
             boxes_origin = results_origin[0].boxes.xywh.cpu()
-            print("id:",results_origin[0].boxes.id)
+            #print("id:",results_origin[0].boxes.id)
             if results_origin[0].boxes.id != None:
                 track_ids_origin = results_origin[0].boxes.id.int().cpu().tolist()
                 class_name_origin = results_origin[0].boxes.cls.int().cpu().tolist()
@@ -54,7 +54,7 @@ class yolo():
             annotated_rotated_frame = results_rotated[0].plot()
             # Get the boxes and track IDs
             boxes_rotated = results_rotated[0].boxes.xywh.cpu()
-            print("id:",results_rotated[0].boxes.id)
+            #print("id:",results_rotated[0].boxes.id)
             if results_rotated[0].boxes.id != None:
                 track_ids_rotated = results_rotated[0].boxes.id.int().cpu().tolist()
                 class_name_rotated = results_rotated[0].boxes.cls.int().cpu().tolist()
@@ -83,7 +83,7 @@ class yolo():
                 # If you want to get screenshots of other objects from the image you can add judgment conditions here
                 # the classifation no of dog is 16 ; the classifation no of human is 0
                 if class_name_origin[count] == 0:
-                    person_ids_origin.append(track_ids_origin[count])
+                    person_ids_origin.append(track_id)
                     x, y, w, h = boxes_origin
                     x = int(x.item())
                     y = int(y.item())
@@ -101,8 +101,9 @@ class yolo():
         if len(track_ids_rotated) > 0:
             for boxes_rotated, track_id in zip(boxes_rotated, track_ids_rotated):
                 if class_name_rotated[count] == 0:
-                    person_ids_rotated.append(track_ids_rotated[count])
+                    person_ids_rotated.append(track_id)
                     x, y, w, h = boxes_rotated
+                    print(boxes_rotated)
                     x = int(x.item())
                     y = int(y.item())
                     w = int(w.item())
@@ -120,14 +121,15 @@ class yolo():
         #重新附加编号
         if no_origin > 0:
             for track_id in range(no_origin):
-                self.save_person_inf(annotated_origin_frame, person_no, person_x_origin[track_id], person_y_origin[track_id], person_w_origin[track_id], person_h_origin[track_id],1)
+                self.save_person_inf(annotated_origin_frame, person_no, person_x_origin[track_id], person_y_origin[track_id], person_w_origin[track_id], person_h_origin[track_id],person_ids_origin[track_id],1)
                 person_ids.append(person_no)
                 person_no = person_no + 1
         #如果原图像没有人的识别，那么以旋转图像的数据为基础， 并且记得替换xywh
         #重新在这里附加编号
         elif no_rotated > 0:
             for track_id in range(no_rotated):
-                self.save_person_inf(annotated_rotated_frame, person_no, person_x_rotated[track_id], person_y_rotated[track_id], person_w_rotated[track_id], person_h_rotated[track_id],0)
+                print(person_ids_rotated[track_id], person_x_rotated[track_id], person_y_rotated[track_id], person_w_rotated[track_id], person_h_rotated[track_id])
+                self.save_person_inf(annotated_rotated_frame, person_no, person_x_rotated[track_id], person_y_rotated[track_id], person_w_rotated[track_id], person_h_rotated[track_id],person_ids_rotated[track_id],0)
                 person_ids.append(person_no)
                 person_no = person_no + 1
         
@@ -138,22 +140,24 @@ class yolo():
                 for j in range(no_origin):
                     distance_x = person_x_origin[j] - person_y_rotated[i]
                     distance_y = person_y_origin[j] - person_x_rotated[i]
-                    if distance_x*distance_x + distance_y*distance_y <= 100:
+                    if distance_x + distance_y <= 5000:
                         flag = 1
                         break
                 #存在未识别到的图像
                 if flag == 0:
-                    self.save_person_inf(annotated_rotated_frame,person_no, person_x_rotated[i], person_y_rotated[i], person_w_rotated[i], person_h_rotated[i],1)
+                    self.save_person_inf(annotated_rotated_frame,person_no, person_x_rotated[i], person_y_rotated[i], person_w_rotated[i], person_h_rotated[i], person_ids_rotated[track_id],1)
                     person_ids.append(person_no)
                     person_no = person_no + 1
         return person_ids
     
-    #为了从图片中切出人脸，决定所有的都已竖直的正常人像为储存数据
-    def save_person_inf(self, img, id, x, y, w, h, flag = 1):
+    #为了从图片中切出人，决定所有的都已竖直的正常人像为储存数据
+    def save_person_inf(self, img, id, x, y, w, h, pid, flag = 1):
         box_data_txt_path = self.box_data_txt_PATH + str(id) + ".txt"
         txt_file = open(box_data_txt_path,'a')
         txt_file.truncate(0)
         txt_file.write(str(flag))
+        txt_file.write('\r')
+        txt_file.write(str(pid))
         txt_file.write('\r')
         txt_file.write(str(x))
         txt_file.write('\r')

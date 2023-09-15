@@ -81,7 +81,7 @@ class Thread_YOLO (threading.Thread):
             resource_controler.update_id_stack(ids)
             # 释放锁
             lockMedia.release()
-            print_time(self.name, self.counter)
+            #print_time(self.name, self.counter)
         
 class Thread_Mediapipe (threading.Thread):
     def __init__(self, threadID, name, counter):
@@ -111,7 +111,7 @@ class Thread_Mediapipe (threading.Thread):
                         resource_controler.remove_successful_checked_ids(id)
             # 释放锁
             lockcut.release()
-            print_time(self.name, self.counter)
+            #print_time(self.name, self.counter)
             
 class Thread_cut_face (threading.Thread):
     def __init__(self, threadID, name, counter):
@@ -138,7 +138,7 @@ class Thread_cut_face (threading.Thread):
                     self.model.cut_picture(id)
             # 释放锁
             lockdeepface.release()
-            print_time(self.name, self.counter)
+            #print_time(self.name, self.counter)
             
 class Thread_deep_face(threading.Thread):
     def __init__(self, threadID, name, counter):
@@ -163,33 +163,38 @@ class Thread_deep_face(threading.Thread):
             self.ages.clear()
             self.dominant_genders.clear()
             self.genders.clear()
-            usable_id = []
+            usable_ids = []
+            # 记录所有识别为人的BOX输出文件的编号
+            person_ids = []
             if resource_num>0:
                 for i in range(resource_num):
                     id = resource_controler.return_id(i)
+                    person_ids.append(id)
                     if resource_controler.check_successful_checked_ids(id) == False:
                         continue
                     resource_controler.Change_deep_face_id(id)
                     #获得检测得到的年龄和性别
                     age, dominant_gender, gender = self.model.detect_age_and_gender(id)
+                    if age < 0:
+                        continue
                     self.ages.append(age)
                     self.dominant_genders.append(dominant_gender)
                     self.genders.append(gender)
-                    usable_id.append(id)
+                    usable_ids.append(id)
             
             #显示结果
-            print("result:",self.ages,self.genders,usable_id)
-            self.model.show_result(self.ages,self.dominant_genders,self.genders,usable_id)
+            print("result:",self.ages,self.genders,usable_ids,person_ids)
+            self.model.show_result(self.ages,self.dominant_genders,self.genders,usable_ids,person_ids)
             resource_controler.clear_id()
             # 释放锁
             lockYOLO.release()
-            print_time(self.name, self.counter)
+            #print_time(self.name, self.counter)
  
 def print_time(threadName, delay):
     time.sleep(delay)
     t = time.time()
     nowTime = int(round(t * 1000))
-    print ("%s: %s  ms:%d" % (threadName, time.ctime(time.time()), nowTime))
+    #print ("%s: %s  ms:%d" % (threadName, time.ctime(time.time()), nowTime))
  
 lockYOLO=threading.Lock()
 lockMedia=threading.Lock()
@@ -200,7 +205,7 @@ lockcut.acquire()
 lockdeepface.acquire()
 threads = []
 
-cap_path = "C:/Users/XIR1SBY/Desktop/camera/camera_picture/crouching1.mp4"
+cap_path = "C:/Users/XIR1SBY/Desktop/data/xie2.mp4"
 cap = cv2.VideoCapture(cap_path)
 # 创建新线程
 thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)
