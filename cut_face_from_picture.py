@@ -57,9 +57,16 @@ class cut_face_from_picture():
         (image_max_y,image_max_x,_) = img.shape
         cut_face_image = img[max(0,int(center_point_y - up_h)):min(image_max_y,int(center_point_y + down_h)),max(0,int(center_point_x - left_w)):min(int(center_point_x + right_w),image_max_x)]
         
-        #如果检测到脸的方向倒置则进行180度旋转保证脸方向朝上
+        #如果检测到脸的方向为横那么旋转90度
+        if abs(point_location[1][0] - point_location[2][0]) < 20:
+            #眼睛在左边
+            if (point_location[1][0] + point_location[2][0]) / 2 < center_point_x and (point_location[1][0] + point_location[2][0]) / 2 - center_point_x < -20:
+                cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            #眼睛在右边
+            elif (point_location[1][0] + point_location[2][0]) / 2 > center_point_x and (point_location[1][0] + point_location[2][0]) / 2 - center_point_x > 20:
+                cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_90_CLOCKWISE)
+         #如果检测到脸的方向倒置则进行180度旋转保证脸方向朝上
         if (point_location[1][1] + point_location[2][1]) / 2 > center_point_y:
             cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_180)
-        
         cv2.imwrite(result_PATH, cut_face_image)
         self.txt_file.close()

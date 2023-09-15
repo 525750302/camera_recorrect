@@ -209,7 +209,7 @@ lockcut.acquire()
 lockdeepface.acquire()
 threads = []
 
-cap_path = "C:/Users/wuse/Desktop/camera_recorrect/camera_picture/anime2.mp4"
+cap_path = "C:/Users/wuse/Desktop/camera_recorrect/camera_picture/xie.mp4"
 cap = cv2.VideoCapture(cap_path)
 # 创建新线程
 thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)

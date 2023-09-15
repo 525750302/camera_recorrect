@@ -166,7 +166,13 @@ class deep_face_detect():
     
     # 更新目标位置
     def vote_data(self,vote_id, age,gender,center_x,center_y):
-        center_distance = abs(int(center_x - self.image_center_x)) + abs(int(center_y - self.image_center_y))
+        center_distance = int(pow(center_x - self.image_center_x,2)) + int(pow(center_y - self.image_center_y,2))
+        txt_path = "C:/Users/wuse/Desktop/camera_recorrect/yolo/result.txt"
+        txt_file = open(txt_path,'a')
+        text = str(age) + "," + str(center_distance)
+        txt_file.write(str(text))
+        txt_file.write('\r')
+        txt_file.close()
         self.vote_age[vote_id] = (self.vote_age[vote_id] * self.vote_count[vote_id] + age*center_distance) / (self.vote_count[vote_id] + center_distance)
         self.vote_gender[vote_id] = (self.vote_gender[vote_id] * self.vote_count[vote_id] + self.gender_to_num(gender) * center_distance) / (self.vote_count[vote_id] + center_distance)
         self.vote_count[vote_id] = self.vote_count[vote_id] + center_distance
