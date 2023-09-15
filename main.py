@@ -1,5 +1,5 @@
 import sys
-sys.path.append(r'C:/Users/XIR1SBY/Desktop/camera/yolo')
+sys.path.append(r'C:/Users/wuse/Desktop/camera_recorrect/yolo')
 import yolo.yolo_main
 import Mediapipe_recognize
 import cut_face_from_picture
@@ -80,6 +80,7 @@ class Thread_YOLO (threading.Thread):
             ids = self.model.get_one_picture()
             resource_controler.update_id_stack(ids)
             # 释放锁
+            print("END " + self.name)
             lockMedia.release()
             #print_time(self.name, self.counter)
         
@@ -110,6 +111,7 @@ class Thread_Mediapipe (threading.Thread):
                     elif flag_checked == False:
                         resource_controler.remove_successful_checked_ids(id)
             # 释放锁
+            print("END " + self.name)
             lockcut.release()
             #print_time(self.name, self.counter)
             
@@ -137,6 +139,7 @@ class Thread_cut_face (threading.Thread):
                     resource_controler.Change_cut_picture_id(id)
                     self.model.cut_picture(id)
             # 释放锁
+            print("END " + self.name)
             lockdeepface.release()
             #print_time(self.name, self.counter)
             
@@ -187,6 +190,7 @@ class Thread_deep_face(threading.Thread):
             self.model.show_result(self.ages,self.dominant_genders,self.genders,usable_ids,person_ids)
             resource_controler.clear_id()
             # 释放锁
+            print("END " + self.name)
             lockYOLO.release()
             #print_time(self.name, self.counter)
  
@@ -205,7 +209,7 @@ lockcut.acquire()
 lockdeepface.acquire()
 threads = []
 
-cap_path = "C:/Users/XIR1SBY/Desktop/data/xie2.mp4"
+cap_path = "C:/Users/wuse/Desktop/camera_recorrect/camera_picture/anime2.mp4"
 cap = cv2.VideoCapture(cap_path)
 # 创建新线程
 thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)

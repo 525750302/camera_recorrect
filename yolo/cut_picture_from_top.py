@@ -41,5 +41,5 @@ class cut_picture_from_top_function():
         # 展示图片
         # cv2.imshow("Src frame", ori_img)
         # cv2.imshow("Log-Polar", new_img)
-        cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/camera_picture/Linear-Polar.png", new_img)
+        cv2.imwrite("C:/Users/wuse/Desktop/camera_recorrect/camera_picture/Linear-Polar.png", new_img)
         return new_img

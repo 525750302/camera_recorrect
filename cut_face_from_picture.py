@@ -4,9 +4,9 @@ import math
 
 class cut_face_from_picture():
     def __init__(self):
-        self.raw_pictiure_path = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
-        self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/data_"
-        self.result_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/face_"
+        self.raw_pictiure_path = "C:/Users/wuse/Desktop/camera_recorrect/yolo/gape_picture_"
+        self.location_data_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/data_"
+        self.result_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/face_"
     def cut_picture(self,id):
         raw_pictiure_path = self.raw_pictiure_path + str(id) + ".png"
         location_data_PATH = self.location_data_PATH + str(id) + ".txt"
@@ -54,7 +54,7 @@ class cut_face_from_picture():
         center_point_y =  point_location[0][1]
         #从图片中切出脸的大致位置
         img = cv2.imread(raw_pictiure_path)
-        (image_max_x,image_max_y,_) = img.shape
+        (image_max_y,image_max_x,_) = img.shape
         cut_face_image = img[max(0,int(center_point_y - up_h)):min(image_max_y,int(center_point_y + down_h)),max(0,int(center_point_x - left_w)):min(int(center_point_x + right_w),image_max_x)]
         
         #如果检测到脸的方向倒置则进行180度旋转保证脸方向朝上

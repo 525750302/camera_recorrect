@@ -7,14 +7,14 @@ import time
 
 class deep_face_detect():
     def __init__(self):
-        self.img_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/face_"
-        self.show_path_origin = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame.png"
-        self.show_path_rotate = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame_rotate.png"
+        self.img_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/face_"
+        self.show_path_origin = "C:/Users/wuse/Desktop/camera_recorrect/yolo/origin_frame.png"
+        self.show_path_rotate = "C:/Users/wuse/Desktop/camera_recorrect/yolo/origin_frame_rotate.png"
         self.pTime = 0 
         self.models = {}
         self.models["age"] = DeepFace.build_model("Age")
         self.models["gender"] = DeepFace.build_model("Gender")
-        self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/box_data_"
+        self.location_data_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/box_data_"
         
         self.original_box_id = []
         self.rotate_box_id = []
@@ -32,21 +32,21 @@ class deep_face_detect():
         #对输入的图片进行预处理，确保输入为224*224 不足的部分会进行补足
         #img_objs = functions.extract_faces(img_path, detector_backend = "skip")
         #img_content = img_objs[0][0]
-        #cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/yolo/test.png",img_content)
+        #cv2.imwrite("C:/Users/wuse/Desktop/camera_recorrect/yolo/test.png",img_content)
         objs = DeepFace.analyze(img_path , 
         actions = ['age', 'gender'],
         detector_backend="mediapipe",
-        enforce_detection = True)
+        enforce_detection = False)
         if objs == -1:
             return -1,-1,-1
-        print(objs[0])
+        print("--------------------objs:",objs[0])
         x = objs[0]["region"]["x"]
         y = objs[0]["region"]["y"]
         w = objs[0]["region"]["w"]
         h = objs[0]["region"]["h"]
         gape_origin_frame = cv2.imread(img_path)
         target = gape_origin_frame[max(int(y), 0):int(y + h),max(int(x), 0):int(x + w)]
-        cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/yolo/detect_target.png", target)
+        cv2.imwrite("C:/Users/wuse/Desktop/camera_recorrect/yolo/detect_target.png", target)
         return objs[0]["age"],objs[0]["dominant_gender"],objs[0]["gender"]
     
     def show_result(self, ages,dominant_genders, genders,ids,person_ids):
