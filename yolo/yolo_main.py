@@ -12,13 +12,13 @@ class yolo():
         os.environ['KMP_DUPLICATE_LIB_OK']='True'
         # Load the YOLOv8 model
         # Download address https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s.pt
-        self.model_origin = YOLO('C:/Users/wuse/Desktop/camera_recorrect/yolo/yolov8s.pt')
-        self.model_rotated = YOLO('C:/Users/wuse/Desktop/camera_recorrect/yolo/yolov8s.pt')
+        self.model_origin = YOLO('C:/Users/XIR1SBY/Desktop/camera/yolo/yolov8s.pt')
+        self.model_rotated = YOLO('C:/Users/XIR1SBY/Desktop/camera/yolo/yolov8s.pt')
         # Open the video file
         self.cap = cap
         # self.cut_function = cut_picture_from_top.cut_picture_from_top_function()
-        self.gape_picture_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/"
-        self.box_data_txt_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/box_data_"
+        self.gape_picture_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/"
+        self.box_data_txt_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/box_data_"
         self.pTime = 0  # 设置第一帧开始处理的起始时间
     def get_one_picture(self):
         # Read a frame from the video

@@ -60,15 +60,15 @@ class cut_face_from_picture():
         #如果检测到脸的方向为横那么旋转90度
         if abs(point_location[3][0] - point_location[4][0]) < 60:
             #眼睛在左边
-            if (point_location[3][0] + point_location[4][0]) / 2 < center_point_x and (point_location[3][0] + point_location[4][0]) / 2 - center_point_x < -50:
+            if (point_location[3][0] + point_location[4][0]) / 2 < center_point_x and (point_location[3][0] + point_location[4][0]) / 2 - center_point_x < -30:
                 cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_90_CLOCKWISE)
                 img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
             #眼睛在右边
-            elif (point_location[3][0] + point_location[4][0]) / 2 > center_point_x and (point_location[3][0] + point_location[4][0]) / 2 - center_point_x > 50:
+            elif (point_location[3][0] + point_location[4][0]) / 2 > center_point_x and (point_location[3][0] + point_location[4][0]) / 2 - center_point_x > 30:
                 cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
                 img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
          #如果检测到脸的方向倒置则进行180度旋转保证脸方向朝上
-        elif (point_location[3][1] + point_location[4][1]) / 2 - center_point_y == 50:
+        elif (point_location[3][1] + point_location[4][1]) / 2 - center_point_y >= 30:
             cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_180)
             img = cv2.rotate(img, cv2.ROTATE_180)
         cv2.imwrite(raw_pictiure_path, img)

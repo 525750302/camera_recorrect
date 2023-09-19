@@ -7,7 +7,8 @@ import time
 
 class deep_face_detect():
     def __init__(self):
-        self.img_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
+        self.img_gape_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
+        self.img_face_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
         self.show_path_origin = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame.png"
         self.show_path_rotate = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame_rotate.png"
         self.pTime = 0 
@@ -28,18 +29,19 @@ class deep_face_detect():
         self.image_center_y = 0
 
     def detect_age_and_gender(self, id):
-        img_path = self.img_PATH + str(id) + ".png"
+        img_gape_path = self.img_gape_PATH + str(id) + ".png"
+        img_face_path = self.img_face_PATH + str(id) + ".png"
         #对输入的图片进行预处理，确保输入为224*224 不足的部分会进行补足
         #img_objs = functions.extract_faces(img_path, detector_backend = "skip")
         #img_content = img_objs[0][0]
         #cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/yolo/test.png",img_content)
-        objs = DeepFace.analyze(img_path , 
+        objs = DeepFace.analyze(img_gape_path , 
         actions = ['age', 'gender'],
         detector_backend="retinaface",
         enforce_detection = True)
         flag_model = 1
         if objs == -1:
-            objs = DeepFace.analyze(img_path ,
+            objs = DeepFace.analyze(img_face_path ,
             actions = ['age', 'gender'],
             detector_backend="mediapipe",
             enforce_detection = True)
@@ -51,7 +53,10 @@ class deep_face_detect():
         y = objs[0]["region"]["y"]
         w = objs[0]["region"]["w"]
         h = objs[0]["region"]["h"]
-        gape_origin_frame = cv2.imread(img_path)
+        if flag_model == 1:
+            gape_origin_frame = cv2.imread(img_gape_path)
+        else:
+            gape_origin_frame = cv2.imread(img_face_path)
         target = gape_origin_frame[max(int(y), 0):int(y + h),max(int(x), 0):int(x + w)]
         cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/yolo/detect_target.png", target)
         return objs[0]["age"],objs[0]["dominant_gender"],objs[0]["gender"],flag_model
@@ -179,7 +184,7 @@ class deep_face_detect():
         center_distance = center_distance - int(flag_model * 100000)
         txt_path = "C:/Users/XIR1SBY/Desktop/camera/yolo/result.txt"
         txt_file = open(txt_path,'a')
-        text = str(age) + "," + str(center_distance) + "," + str(log_gender) + "," + str(int(center_x)) + "," + str(int(self.image_center_x)) + "," + str(int(center_y)) + "," +  str(int(self.image_center_y)) + "," + str(int(self.vote_count[vote_id]))
+        text = str(age) + "," + str(center_distance) + "," + str(log_gender) + "," + str(int(center_x)) + "," + str(int(self.image_center_x)) + "," + str(int(center_y)) + "," +  str(int(self.image_center_y)) + "," + str(int(self.vote_count[vote_id])) +"," +str(flag_model)
         txt_file.write(str(text))
         txt_file.write('\r')
         txt_file.close()
