@@ -12,13 +12,13 @@ options = vision.FaceDetectorOptions(base_options=base_options)
 detector = vision.FaceDetector.create_from_options(options)
 
 # STEP 3: Load the input image.
-cap_path = "C:/Users/wuse/Desktop/camera_recorrect/camera_picture/anime3.mp4"
+cap_path = "C:/Users/XIR1SBY/Desktop/camera/camera_picture/anime3.mp4"
 cap = cv2.VideoCapture(cap_path)
 success = True
 while success:
     success, image = cap.read()
-    cv2.imwrite("C:/Users/wuse/Desktop/camera_recorrect/test.png", image)
-    PATH = "C:/Users/wuse/Desktop/camera_recorrect/test.png"
+    cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/test.png", image)
+    PATH = "C:/Users/XIR1SBY/Desktop/camera/test.png"
     image = mp.Image.create_from_file(PATH)
 
     # STEP 4: Detect faces in the input image.

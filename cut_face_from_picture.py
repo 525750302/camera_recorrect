@@ -4,9 +4,9 @@ import math
 
 class cut_face_from_picture():
     def __init__(self):
-        self.raw_pictiure_path = "C:/Users/wuse/Desktop/camera_recorrect/yolo/gape_picture_"
-        self.location_data_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/data_"
-        self.result_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/face_"
+        self.raw_pictiure_path = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
+        self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/data_"
+        self.result_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/face_"
     def cut_picture(self,id):
         raw_pictiure_path = self.raw_pictiure_path + str(id) + ".png"
         location_data_PATH = self.location_data_PATH + str(id) + ".txt"
@@ -46,10 +46,10 @@ class cut_face_from_picture():
             distance_y.append(point_location[i][1] - point_location[0][1])
         
         #从各个特侦点计算脸部的大致位置
-        up_h =abs(min(distance_y))*3
-        down_h = max(distance_y)*3
-        right_w = max(distance_x)*2
-        left_w = abs(min(distance_x))*2
+        up_h =min(50,abs(min(-15,min(distance_y))))*2
+        down_h = min(50,max(15,max(distance_y)))*2
+        right_w = min(50,max(15,max(distance_x)))*2
+        left_w = min(50,abs(min(-15,min(distance_x))))*2
         center_point_x =  point_location[0][0]
         center_point_y =  point_location[0][1]
         #从图片中切出脸的大致位置
@@ -58,15 +58,19 @@ class cut_face_from_picture():
         cut_face_image = img[max(0,int(center_point_y - up_h)):min(image_max_y,int(center_point_y + down_h)),max(0,int(center_point_x - left_w)):min(int(center_point_x + right_w),image_max_x)]
         
         #如果检测到脸的方向为横那么旋转90度
-        if abs(point_location[1][0] - point_location[2][0]) < 20:
+        if abs(point_location[3][0] - point_location[4][0]) < 60:
             #眼睛在左边
-            if (point_location[1][0] + point_location[2][0]) / 2 < center_point_x and (point_location[1][0] + point_location[2][0]) / 2 - center_point_x < -20:
-                cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
-            #眼睛在右边
-            elif (point_location[1][0] + point_location[2][0]) / 2 > center_point_x and (point_location[1][0] + point_location[2][0]) / 2 - center_point_x > 20:
+            if (point_location[3][0] + point_location[4][0]) / 2 < center_point_x and (point_location[3][0] + point_location[4][0]) / 2 - center_point_x < -50:
                 cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_90_CLOCKWISE)
+                img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+            #眼睛在右边
+            elif (point_location[3][0] + point_location[4][0]) / 2 > center_point_x and (point_location[3][0] + point_location[4][0]) / 2 - center_point_x > 50:
+                cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+                img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
          #如果检测到脸的方向倒置则进行180度旋转保证脸方向朝上
-        if (point_location[1][1] + point_location[2][1]) / 2 > center_point_y:
+        elif (point_location[3][1] + point_location[4][1]) / 2 - center_point_y == 50:
             cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_180)
+            img = cv2.rotate(img, cv2.ROTATE_180)
+        cv2.imwrite(raw_pictiure_path, img)
         cv2.imwrite(result_PATH, cut_face_image)
         self.txt_file.close()

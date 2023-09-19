@@ -8,8 +8,9 @@ class mediapipe_model():
         self.mpPose = mp.solutions.pose  # 姿态识别方法
         self.pose = self.mpPose.Pose(static_image_mode=True, # 静态图模式，False代表置信度高时继续跟踪，True代表实时跟踪检测新的结果
                            #upper_body_only=True,  # 是否只检测上半身
+                           model_complexity = 1,
                            smooth_landmarks=False,  # 平滑，一般为True
-                           min_detection_confidence=0.8, # 检测置信度
+                           min_detection_confidence=0.6, # 检测置信度
                            min_tracking_confidence=0.5)  # 跟踪置信度
         # 检测置信度大于0.5代表检测到了，若此时跟踪置信度大于0.5就继续跟踪，小于就沿用上一次，避免一次又一次重复使用模型
 
@@ -19,8 +20,8 @@ class mediapipe_model():
         self.pTime = 0  # 设置第一帧开始处理的起始时间
         #（2）处理每一帧图像
         self.lmlist = [] # 存放人体关键点信息
-        self.picture_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/"
-        self.txt_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/"
+        self.picture_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/"
+        self.txt_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/"
         
     def check_feacture(self, id):    
         #根据收到的ID来决定输入的数据

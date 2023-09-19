@@ -7,14 +7,14 @@ import time
 
 class deep_face_detect():
     def __init__(self):
-        self.img_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/face_"
-        self.show_path_origin = "C:/Users/wuse/Desktop/camera_recorrect/yolo/origin_frame.png"
-        self.show_path_rotate = "C:/Users/wuse/Desktop/camera_recorrect/yolo/origin_frame_rotate.png"
+        self.img_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
+        self.show_path_origin = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame.png"
+        self.show_path_rotate = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame_rotate.png"
         self.pTime = 0 
         self.models = {}
         self.models["age"] = DeepFace.build_model("Age")
         self.models["gender"] = DeepFace.build_model("Gender")
-        self.location_data_PATH = "C:/Users/wuse/Desktop/camera_recorrect/yolo/box_data_"
+        self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/box_data_"
         
         self.original_box_id = []
         self.rotate_box_id = []
@@ -32,13 +32,20 @@ class deep_face_detect():
         #对输入的图片进行预处理，确保输入为224*224 不足的部分会进行补足
         #img_objs = functions.extract_faces(img_path, detector_backend = "skip")
         #img_content = img_objs[0][0]
-        #cv2.imwrite("C:/Users/wuse/Desktop/camera_recorrect/yolo/test.png",img_content)
+        #cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/yolo/test.png",img_content)
         objs = DeepFace.analyze(img_path , 
         actions = ['age', 'gender'],
-        detector_backend="mediapipe",
-        enforce_detection = False)
+        detector_backend="retinaface",
+        enforce_detection = True)
+        flag_model = 1
         if objs == -1:
-            return -1,-1,-1
+            objs = DeepFace.analyze(img_path ,
+            actions = ['age', 'gender'],
+            detector_backend="mediapipe",
+            enforce_detection = True)
+            flag_model = 0.5
+            if objs == -1:
+                return -1,-1,-1,-1
         print("--------------------objs:",objs[0])
         x = objs[0]["region"]["x"]
         y = objs[0]["region"]["y"]
@@ -46,10 +53,10 @@ class deep_face_detect():
         h = objs[0]["region"]["h"]
         gape_origin_frame = cv2.imread(img_path)
         target = gape_origin_frame[max(int(y), 0):int(y + h),max(int(x), 0):int(x + w)]
-        cv2.imwrite("C:/Users/wuse/Desktop/camera_recorrect/yolo/detect_target.png", target)
-        return objs[0]["age"],objs[0]["dominant_gender"],objs[0]["gender"]
+        cv2.imwrite("C:/Users/XIR1SBY/Desktop/camera/yolo/detect_target.png", target)
+        return objs[0]["age"],objs[0]["dominant_gender"],objs[0]["gender"],flag_model
     
-    def show_result(self, ages,dominant_genders, genders,ids,person_ids):
+    def show_result(self, ages,dominant_genders, genders,ids,person_ids,flag_model):
         #显示最终结果图片并且加上年龄和性别的结果 查看FPS
         cTime = time.time() #处理完一帧图像的时间
         fps = 1/(cTime-self.pTime)
@@ -60,7 +67,7 @@ class deep_face_detect():
         # 在视频上显示fps信息，先转换成整数再变成字符串形式，文本显示坐标，文本字体，文本大小
         cv2.putText(annotated_origin_frame, str(int(fps)), (70,50), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 3)  
         cv2.putText(annotated_rotated_frame, str(int(fps)), (70,50), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 3) 
-        (self.image_center_x,self.image_center_y,_) = annotated_origin_frame.shape
+        (self.image_center_y,self.image_center_x,_) = annotated_origin_frame.shape
         self.image_center_x = self.image_center_x / 2
         self.image_center_y = self.image_center_y / 2
                 
@@ -86,7 +93,7 @@ class deep_face_detect():
             # 如果识别出了年龄那么进行更新
             for j in range(id_num):
                 if ids[j] == id and vote_id >= 0:
-                    self.vote_data(vote_id,ages[j],dominant_genders[j],center_x, center_y)
+                    self.vote_data(vote_id,ages[j],dominant_genders[j],genders[j],center_x, center_y,flag_model[j])
             target_no_in_class = -1
             if flag == 1:
                 for j in range(len(self.original_box_id)):
@@ -165,11 +172,14 @@ class deep_face_detect():
         return min_no
     
     # 更新目标位置
-    def vote_data(self,vote_id, age,gender,center_x,center_y):
-        center_distance = int(pow(center_x - self.image_center_x,2)) + int(pow(center_y - self.image_center_y,2))
-        txt_path = "C:/Users/wuse/Desktop/camera_recorrect/yolo/result.txt"
+    def vote_data(self,vote_id, age,gender,log_gender,center_x,center_y,flag_model):
+        center_distance = int(flag_model * (int(pow(center_x - self.image_center_x,2)) + int(pow(center_y - self.image_center_y,2))))
+        if center_distance<int(200000 * flag_model):
+            return 
+        center_distance = center_distance - int(flag_model * 100000)
+        txt_path = "C:/Users/XIR1SBY/Desktop/camera/yolo/result.txt"
         txt_file = open(txt_path,'a')
-        text = str(age) + "," + str(center_distance)
+        text = str(age) + "," + str(center_distance) + "," + str(log_gender) + "," + str(int(center_x)) + "," + str(int(self.image_center_x)) + "," + str(int(center_y)) + "," +  str(int(self.image_center_y)) + "," + str(int(self.vote_count[vote_id]))
         txt_file.write(str(text))
         txt_file.write('\r')
         txt_file.close()

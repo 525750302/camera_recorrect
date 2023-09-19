@@ -1,5 +1,5 @@
 import sys
-sys.path.append(r'C:/Users/wuse/Desktop/camera_recorrect/yolo')
+sys.path.append(r'C:/Users/XIR1SBY/Desktop/camera/yolo')
 import yolo.yolo_main
 import Mediapipe_recognize
 import cut_face_from_picture
@@ -153,6 +153,7 @@ class Thread_deep_face(threading.Thread):
         self.ages = []
         self.dominant_genders = []
         self.genders = []
+        self.flag = []
         
     def run(self):
         while True:
@@ -177,17 +178,19 @@ class Thread_deep_face(threading.Thread):
                         continue
                     resource_controler.Change_deep_face_id(id)
                     #获得检测得到的年龄和性别
-                    age, dominant_gender, gender = self.model.detect_age_and_gender(id)
+                    age, dominant_gender, gender, flag_model = self.model.detect_age_and_gender(id)
                     if age < 0:
                         continue
                     self.ages.append(age)
                     self.dominant_genders.append(dominant_gender)
                     self.genders.append(gender)
+                    self.flag.append(flag_model)
                     usable_ids.append(id)
+            
             
             #显示结果
             print("result:",self.ages,self.genders,usable_ids,person_ids)
-            self.model.show_result(self.ages,self.dominant_genders,self.genders,usable_ids,person_ids)
+            self.model.show_result(self.ages,self.dominant_genders,self.genders,usable_ids,person_ids,self.flag)
             resource_controler.clear_id()
             # 释放锁
             print("END " + self.name)
@@ -209,7 +212,7 @@ lockcut.acquire()
 lockdeepface.acquire()
 threads = []
 
-cap_path = "C:/Users/wuse/Desktop/camera_recorrect/camera_picture/xie.mp4"
+cap_path = "C:/Users/XIR1SBY/Desktop/data/machida.mp4"
 cap = cv2.VideoCapture(cap_path)
 # 创建新线程
 thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)
