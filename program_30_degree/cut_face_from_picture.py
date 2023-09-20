@@ -4,9 +4,9 @@ import math
 
 class cut_face_from_picture():
     def __init__(self):
-        self.raw_pictiure_path = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
-        self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/data_"
-        self.result_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/face_"
+        self.raw_pictiure_path = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/gape_picture_"
+        self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/data_"
+        self.result_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/face_"
     def cut_picture(self,id):
         raw_pictiure_path = self.raw_pictiure_path + str(id) + ".png"
         location_data_PATH = self.location_data_PATH + str(id) + ".txt"

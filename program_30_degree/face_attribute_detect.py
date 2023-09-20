@@ -7,15 +7,15 @@ import time
 
 class deep_face_detect():
     def __init__(self):
-        self.img_gape_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
-        self.img_face_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/gape_picture_"
-        self.show_path_origin = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame.png"
-        self.show_path_rotate = "C:/Users/XIR1SBY/Desktop/camera/yolo/origin_frame_rotate.png"
+        self.img_gape_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/gape_picture_"
+        self.img_face_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/gape_picture_"
+        self.show_path_origin = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/origin_frame.png"
+        self.show_path_rotate = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/origin_frame_rotate.png"
         self.pTime = 0 
         self.models = {}
         self.models["age"] = DeepFace.build_model("Age")
         self.models["gender"] = DeepFace.build_model("Gender")
-        self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/yolo/box_data_"
+        self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/box_data_"
         
         self.original_box_id = []
         self.rotate_box_id = []
@@ -75,7 +75,6 @@ class deep_face_detect():
         cv2.putText(annotated_rotated_frame, str(int(fps)), (70,50), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,0), 3) 
         (self.image_center_y,self.image_center_x,_) = annotated_origin_frame.shape
         self.image_center_x = self.image_center_x / 2
-        self.image_center_y = self.image_center_y / 2
                 
         id_num = len(ids)
         # 在视频上显示年龄和性别信息，结果的文本，文本显示坐标，文本字体，文本大小
@@ -182,7 +181,7 @@ class deep_face_detect():
     def vote_data(self,vote_id, age,gender,log_gender,center_x,center_y,flag_model):
         center_distance = int(flag_model * (int(pow(center_x - self.image_center_x,2)) + int(pow(center_y - self.image_center_y,2))))
         print("center_distance:",center_distance,center_x,self.image_center_x,center_y,self.image_center_y)
-        if center_distance<int(200000 * flag_model):
+        if center_distance<int(250000 * flag_model):
             return 
         center_distance = center_distance - int(flag_model * 100000)
         txt_path = "C:/Users/XIR1SBY/Desktop/camera/yolo/result.txt"

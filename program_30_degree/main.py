@@ -1,6 +1,6 @@
 import sys
 sys.path.append(r'C:/Users/XIR1SBY/Desktop/camera/yolo')
-import yolo.yolo_main
+import yolo_main
 import Mediapipe_recognize
 import cut_face_from_picture
 import face_attribute_detect
@@ -66,7 +66,7 @@ class Thread_YOLO (threading.Thread):
     def __init__(self, threadID, name, counter, cap):
         threading.Thread.__init__(self)
         self.threadID = threadID
-        self.model = yolo.yolo_main.yolo(cap)
+        self.model = yolo_main.yolo(cap)
         self.name = name
         self.counter = counter
     def run(self):
@@ -219,7 +219,7 @@ thread1 = Thread_YOLO(1, "Thread-yolo", 0.01, cap)
 thread2 = Thread_Mediapipe(2, "Thread-mediapipe", 0.01)
 thread3 = Thread_cut_face(3, "Thread-cut-face", 0.01)
 thread4 = Thread_deep_face(4, "Thread_deep_face", 0.01)
-txt_path = "C:/Users/XIR1SBY/Desktop/camera/yolo/result.txt"
+txt_path = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/result.txt"
 txt_file = open(txt_path,'a')
 txt_file.truncate(0)
 txt_file.close()
