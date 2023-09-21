@@ -9,7 +9,7 @@ class yolo():
     def __init__(self, cap):
         os.environ['KMP_DUPLICATE_LIB_OK']='True'
         # Load the YOLOv8 model
-        # Download address https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s.pt
+        # Download from the address https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s.pt
         self.model_origin = YOLO('C:/Users/XIR1SBY/Desktop/camera/yolo/yolov8s.pt')
         self.model_rotated = YOLO('C:/Users/XIR1SBY/Desktop/camera/yolo/yolov8s.pt')
         # Open the video file
@@ -30,10 +30,12 @@ class yolo():
         #print(success)
         
         #--------------------------------------
+        # rote the origin image to detect human from different direction
         rotated_frame = cv2.flip(origin_frame, 1)
         rotated_frame = cv2.rotate(rotated_frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
         track_ids_origin = []
         track_ids_rotated = []
+        
         if success:
             # Run YOLOv8 tracking on the origin_frame, persisting tracks between origin_frames
             results_origin = self.model_origin.track(origin_frame, persist=True, conf=0.3, iou=0.5)
@@ -43,6 +45,7 @@ class yolo():
             boxes_origin = results_origin[0].boxes.xywh.cpu()
             #print("id:",results_origin[0].boxes.id)
             if results_origin[0].boxes.id != None:
+                # the number of object boxes be detected
                 track_ids_origin = results_origin[0].boxes.id.int().cpu().tolist()
                 class_name_origin = results_origin[0].boxes.cls.int().cpu().tolist()
                 
@@ -52,7 +55,7 @@ class yolo():
             annotated_rotated_frame = results_rotated[0].plot()
             # Get the boxes and track IDs
             boxes_rotated = results_rotated[0].boxes.xywh.cpu()
-            #print("id:",results_rotated[0].boxes.id)
+
             if results_rotated[0].boxes.id != None:
                 track_ids_rotated = results_rotated[0].boxes.id.int().cpu().tolist()
                 class_name_rotated = results_rotated[0].boxes.cls.int().cpu().tolist()
@@ -62,6 +65,7 @@ class yolo():
             cv2.imwrite(PATH, annotated_rotated_frame)
         
         #-----------------------------
+        # save the human boxes data from origin image and rotated image
         no_origin = 0
         person_ids_origin = []
         person_x_origin = []
@@ -77,12 +81,13 @@ class yolo():
         count = 0
         if len(track_ids_origin) > 0:
             for boxes_origin, track_id in zip(boxes_origin, track_ids_origin):
-                #检测是否是人类
+                # check if the object is human
                 # If you want to get screenshots of other objects from the image you can add judgment conditions here
                 # the classifation no of dog is 16 ; the classifation no of human is 0
                 if class_name_origin[count] == 0:
                     person_ids_origin.append(track_id)
                     x, y, w, h = boxes_origin
+                    #save the date about the box
                     x = int(x.item())
                     y = int(y.item())
                     w = int(w.item())
@@ -114,6 +119,7 @@ class yolo():
                 count = count + 1
         
         person_ids = []
+        # Renumbering of human data to save human data as gape_picture_X.png
         person_no = 0
         #如果原图像有人的识别，那么以原图像的数据为基础
         #重新附加编号
@@ -131,7 +137,7 @@ class yolo():
                 person_ids.append(person_no)
                 person_no = person_no + 1
         
-        #如果原图和旋转图都识别到东西，那么检验是否有重复或者未识别
+        #If both the original and rotated images recognize human, then check for duplicates or unrecognized
         if no_origin > 0 and no_rotated > 0: 
             for i in range(no_rotated):
                 flag = 0
@@ -141,14 +147,15 @@ class yolo():
                     if distance_x + distance_y <= 5000:
                         flag = 1
                         break
-                #存在未识别到的图像
+                #unrecognized images exists
                 if flag == 0:
                     self.save_person_inf(annotated_rotated_frame,person_no, person_x_rotated[i], person_y_rotated[i], person_w_rotated[i], person_h_rotated[i], person_ids_rotated[track_id],1)
                     person_ids.append(person_no)
                     person_no = person_no + 1
         return person_ids
     
-    #为了从图片中切出人，决定所有的都已竖直的正常人像为储存数据
+    # save person data and ouput human image as gape_picture_X.png
+    # save box location data as box_data_X.txt
     def save_person_inf(self, img, id, x, y, w, h, pid, flag = 1):
         box_data_txt_path = self.box_data_txt_PATH + str(id) + ".txt"
         txt_file = open(box_data_txt_path,'a')

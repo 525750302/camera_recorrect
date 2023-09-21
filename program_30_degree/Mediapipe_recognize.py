@@ -6,6 +6,8 @@ class mediapipe_model():
     def __init__(self) -> None:
         # 导入姿态跟踪方法
         self.mpPose = mp.solutions.pose  # 姿态识别方法
+        # decide how to recogenize face image here
+        # the higher the min_detection_confidence is the harder to detect face image
         self.pose = self.mpPose.Pose(static_image_mode=True, # 静态图模式，False代表置信度高时继续跟踪，True代表实时跟踪检测新的结果
                            #upper_body_only=True,  # 是否只检测上半身
                            model_complexity = 1,
@@ -20,6 +22,7 @@ class mediapipe_model():
         self.pTime = 0  # 设置第一帧开始处理的起始时间
         #（2）处理每一帧图像
         self.lmlist = [] # 存放人体关键点信息
+        
         self.picture_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/"
         self.txt_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/"
         
@@ -43,6 +46,7 @@ class mediapipe_model():
         # 记录是否检测到人脸
 
         # 如果检测到体态就执行下面内容，没检测到就不执行
+        # check result data and save data_X.txt
         if results.pose_landmarks:
 
             # 绘制姿态坐标点，img为画板，传入姿态点坐标，坐标连线
@@ -59,7 +63,8 @@ class mediapipe_model():
                 # 转换为像素坐标(cx,cy)，图像的实际长宽乘以比例，像素坐标一定是整数
                 cx, cy = int(lm.x * w), int(lm.y * h)
 
-                # 打印坐标信息
+                # save useful point data no.0 2 5 8 7 9 10
+                # for details please check https://developers.google.com/mediapipe/solutions/vision/pose_landmarker
                 if index == 0 or index == 2 or index == 5 or index == 8 or index == 7 or index == 9 or index == 10:
                     txt_file.write(str(cx))
                     txt_file.write('\r')

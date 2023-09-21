@@ -3,11 +3,14 @@ from PIL import Image
 import math
 
 class cut_face_from_picture():
+    
     def __init__(self):
         self.raw_pictiure_path = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/gape_picture_"
         self.location_data_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/data_"
         self.result_PATH = "C:/Users/XIR1SBY/Desktop/camera/program_30_degree/face_"
+        
     def cut_picture(self,id):
+        # read human picture and mediapipe point result
         raw_pictiure_path = self.raw_pictiure_path + str(id) + ".png"
         location_data_PATH = self.location_data_PATH + str(id) + ".txt"
         self.txt_file = open(location_data_PATH,'r')
@@ -36,7 +39,7 @@ class cut_face_from_picture():
         #else:
         #    down_h = abs(point_location[0][1] - (point_location[1][1] + point_location[2][1]) / 2)*6
         
-        #以鼻子为中心点计算其他特征点的距离
+        #Calculate the distances between other feature points and the nose which is the center point
         distance_x =[]
         distance_y =[]
         for i in range(len(point_index)):
@@ -45,7 +48,8 @@ class cut_face_from_picture():
             distance_x.append(point_location[i][0] - point_location[0][0])
             distance_y.append(point_location[i][1] - point_location[0][1])
         
-        #从各个特侦点计算脸部的大致位置
+        # decide the face location using the distances
+        # Set the miximum distance and the maximum distance
         up_h =min(50,abs(min(-20,min(distance_y))))*2
         down_h = min(50,max(20,max(distance_y)))*2
         right_w = min(50,max(20,max(distance_x)))*2
@@ -57,7 +61,7 @@ class cut_face_from_picture():
         (image_max_y,image_max_x,_) = img.shape
         cut_face_image = img[max(0,int(center_point_y - up_h)):min(image_max_y,int(center_point_y + down_h)),max(0,int(center_point_x - left_w)):min(int(center_point_x + right_w),image_max_x)]
         
-        #如果检测到脸的方向为横那么旋转90度
+        #If the face is detected to be oriented horizontally then rotate 90 degrees to keep the face at a vertical angle
         if abs(point_location[3][0] - point_location[4][0]) < 60:
             #眼睛在左边
             if (point_location[3][0] + point_location[4][0]) / 2 < center_point_x and (point_location[3][0] + point_location[4][0]) / 2 - center_point_x < -30:
@@ -67,7 +71,7 @@ class cut_face_from_picture():
             elif (point_location[3][0] + point_location[4][0]) / 2 > center_point_x and (point_location[3][0] + point_location[4][0]) / 2 - center_point_x > 30:
                 cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
                 img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-         #如果检测到脸的方向倒置则进行180度旋转保证脸方向朝上
+        # If the face is detected to be inverted then a 180 degree rotation is performed to ensure that the face is oriented upwards
         elif (point_location[3][1] + point_location[4][1]) / 2 - center_point_y >= 30:
             cut_face_image = cv2.rotate(cut_face_image, cv2.ROTATE_180)
             img = cv2.rotate(img, cv2.ROTATE_180)
