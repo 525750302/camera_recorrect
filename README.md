@@ -11,7 +11,7 @@ To use, please download the entire project.
 
 3.Change code in deepface package (path ```.\Lib\site-packages\deepface```)
 
-  + In ```Deepface.py```, add following code in line 321.
+  + In ```Deepface.py```, add the following code in line 321.
 
     ```
     if img_objs == -1:
