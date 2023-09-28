@@ -54,3 +54,14 @@ It is still difficult to recognize men and women from top angle.
 Due to the attribute of mediapipe, it is difficult to recognize people with long hair. Due to the fact that the retinaface uses the contours of the face to recognize the face, people with thinning hair may recognize other parts of the face as a human face.
 
 By changing the angle at which the photo or video is taken, it is possible to increase the accuracy of the recognition by taking the photo from an angle where the face can be more easily seen.
+
+# Result
+Result will be saved in ```.\yolo``` file folder.
+
+
+Age and gender result will be saved in ```.\yolo\result.txt```.
+ID and location data of human box will be saved in ```.\yolo\box_data_X.txt```
+For image data will change during running program, please check the result during running.
+For better result output, please check python files in ```.\model and code``` file folder.
+
+Python files in ```.\program for 30 degree``` are used for tilt angle cameras.
