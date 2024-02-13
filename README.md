@@ -1,6 +1,8 @@
 # camera_recorrect
 This program recognizes faces in images taken vertically from above using YOLOv8, mediapipe, and deepface models. And can recognize the age and gender of the face by using deepface.
 
+https://github.com/525750302/camera_recorrect/issues/1#issue-2131974745
+
 # How to use
 To use, please download the entire project.
 
