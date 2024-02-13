@@ -55,6 +55,19 @@ Due to the attribute of mediapipe, it is difficult to recognize people with long
 
 By changing the angle at which the photo or video is taken, it is possible to increase the accuracy of the recognition by taking the photo from an angle where the face can be more easily seen.
 
+# Improvement
+
+The YOLO v8 model has been further trained to recognize horizontal portraits of individuals entering the frame from a side angle in a vertical orientation. 
+
+By utilizing MediaPipe for rapid facial data capture, the efficiency and accuracy of the DeepFace model's processing capabilities are enhanced. 
+
+The detection accuracy is improved and false identifications are reduced by allocating weights of 0.66 to the DeepFace.RetinaFace model and 0.33 to the DeepFace.MediaPipe model.
+
+
+
+
+
+
 # Result
 Result will be saved in ```.\yolo``` file folder.
 
