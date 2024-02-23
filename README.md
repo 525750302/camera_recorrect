@@ -1,5 +1,10 @@
 # camera_recorrect
 This program recognizes faces in images taken vertically from above using YOLOv8, mediapipe, and deepface models. And can recognize the age and gender of the face by using deepface.
+#####################################################
+
+A recognition result. The person in the image has been successfully identified as a young male under 30 years old and is being continuously tracked.
+
+[https://github.com/525750302/camera_recorrect/issues/1#issue-2131974745](https://github.com/525750302/camera_recorrect/assets/46802084/7791c781-381c-49db-a0c2-86a266fc6842)
 
 # How to use
 To use, please download the entire project.
@@ -79,8 +84,3 @@ For better result output, please check python files in ```.\model and code``` fi
 
 Python files in ```.\program for 30 degree``` are used for tilt angle cameras.
 
-#####################################################
-
-A recognition result. The person in the image has been successfully identified as a young male under 30 years old and is being continuously tracked.
-
-[https://github.com/525750302/camera_recorrect/issues/1#issue-2131974745](https://github.com/525750302/camera_recorrect/assets/46802084/7791c781-381c-49db-a0c2-86a266fc6842)
